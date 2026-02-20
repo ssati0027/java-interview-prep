@@ -1,9 +1,12 @@
 {
+  
+  "version": 2,
   "functions": {
     "api/ask.js": {
       "maxDuration": 30
     }
   },
+  
   "headers": [
     {
       "source": "/api/(.*)",
