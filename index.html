@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Spring Boot Interview Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f2eb;
+  --surface: #ede9e0;
+  --card: #ffffff;
+  --border: #d8d3c8;
+  --accent: #c84b31;
+  --accent2: #2d6a4f;
+  --accent3: #e07c39;
+  --text: #1a1a1a;
+  --muted: #7a7570;
+  --tag-bg: #fef3ee;
+  --tag-text: #c84b31;
+  --answered-bg: #f0f7f4;
+  --answered-border: #a8d5be;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Subtle paper texture */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8b89a' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none; z-index:0;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky; top:0; z-index:200;
+  background: rgba(245,242,235,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 2px solid var(--border);
+  padding: 0 28px;
+  height: 60px;
+  display: flex; align-items: center; gap: 20px;
+}
+
+.logo {
+  font-size: 18px; font-weight: 800; letter-spacing: -0.5px;
+  color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent); display: inline-block;
+}
+
+.header-stats {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 24px;
+}
+.h-stat {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.h-stat-val {
+  font-size: 13px; font-weight: 600; color: var(--text);
+}
+.h-stat-bar {
+  width: 80px; height: 4px; background: var(--border);
+  border-radius: 2px; overflow: hidden;
+}
+.h-stat-fill {
+  height: 100%; background: var(--accent2);
+  border-radius: 2px; transition: width 0.5s ease;
+  width: 0%;
+}
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: calc(100vh - 60px);
+  position: relative; z-index: 1;
+}
+
+/* ── SIDEBAR ── */
+aside {
+  border-right: 2px solid var(--border);
+  background: var(--surface);
+  position: sticky; top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+aside::-webkit-scrollbar { width: 4px; }
+aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.sidebar-search {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.search-input {
+  width: 100%;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--muted); }
+
+.sidebar-sections { flex: 1; overflow-y: auto; padding: 8px 0; }
+
+.section-btn {
+  width: 100%; padding: 9px 16px;
+  background: none; border: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px; font-weight: 400;
+  color: var(--muted); text-align: left;
+  cursor: pointer; display: flex;
+  align-items: center; gap: 10px;
+  border-left: 3px solid transparent;
+  transition: all 0.15s; border-radius: 0 6px 6px 0; margin-right: 8px;
+}
+.section-btn:hover { color: var(--text); background: rgba(200,75,49,0.06); }
+.section-btn.active {
+  color: var(--accent); border-left-color: var(--accent);
+  background: rgba(200,75,49,0.08); font-weight: 600;
+}
+.section-btn .scount {
+  margin-left: auto; font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; background: var(--border);
+  color: var(--muted); padding: 1px 7px; border-radius: 10px;
+}
+.section-btn.active .scount { background: rgba(200,75,49,0.15); color: var(--accent); }
+.section-btn .semoji { font-size: 15px; width: 20px; text-align: center; }
+
+.freq-badge {
+  font-size: 9px; background: #fff3cd; color: #856404;
+  border: 1px solid #ffc107; border-radius: 4px;
+  padding: 1px 4px; font-family: 'IBM Plex Mono', monospace;
+  margin-left: 2px;
+}
+
+/* ── MAIN ── */
+main { padding: 28px 32px; max-width: 860px; }
+
+/* section content visibility */
+.sec-panel { display: none; }
+.sec-panel.active { display: block; }
+
+.sec-head {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; margin-bottom: 20px;
+  gap: 16px;
+}
+.sec-head-left {}
+.sec-title {
+  font-size: 24px; font-weight: 800; letter-spacing: -0.5px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-desc { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.sec-progress {
+  display: flex; align-items: center; gap: 8px; margin-top: 10px;
+}
+.sec-prog-bar {
+  width: 160px; height: 5px; background: var(--border);
+  border-radius: 3px; overflow: hidden;
+}
+.sec-prog-fill {
+  height: 100%; background: var(--accent2);
+  border-radius: 3px; transition: width 0.4s ease; width: 0%;
+}
+.sec-prog-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--muted);
+}
+
+/* ask all button */
+.ask-all-btn {
+  background: var(--accent); color: white;
+  border: none; border-radius: 8px; padding: 9px 18px;
+  font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+}
+.ask-all-btn:hover { background: #b03d26; transform: translateY(-1px); box-shadow: var(--shadow); }
+.ask-all-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ── QUESTION CARD ── */
+.q-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow);
+}
+.q-card:hover { border-color: #c4bdb5; box-shadow: var(--shadow-lg); }
+.q-card.answered { border-color: var(--answered-border); background: var(--answered-bg); }
+.q-card.open { border-color: #b0a898; }
+
+.q-header {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 15px; cursor: pointer; user-select: none;
+}
+.q-num {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  color: var(--muted); min-width: 30px; padding-top: 3px;
+}
+.q-body { flex: 1; }
+.q-text { font-size: 13.5px; font-weight: 600; line-height: 1.5; color: var(--text); }
+
+.q-tags { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+.q-tag {
+  font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+  background: var(--tag-bg); color: var(--tag-text);
+  border: 1px solid rgba(200,75,49,0.2);
+  padding: 1px 7px; border-radius: 12px;
+}
+.q-tag.green {
+  background: #f0f7f4; color: #2d6a4f;
+  border-color: rgba(45,106,79,0.2);
+}
+.q-tag.orange {
+  background: #fef6ee; color: #c85b1a;
+  border-color: rgba(200,75,49,0.15);
+}
+
+.q-controls { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+
+.ask-btn {
+  background: var(--accent); color: white; border: none;
+  border-radius: 6px; padding: 5px 13px;
+  font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.ask-btn:hover { background: #b03d26; }
+.ask-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+.ask-btn.done { background: var(--accent2); }
+
+.chevron {
+  color: var(--muted); font-size: 12px;
+  transition: transform 0.2s; line-height: 1;
+}
+.q-card.open .chevron { transform: rotate(180deg); }
+
+/* ── ANSWER PANEL ── */
+.ans-panel {
+  display: none; border-top: 1.5px solid var(--border);
+}
+.q-card.open .ans-panel { display: block; }
+
+.ans-inner { padding: 16px 16px 16px 57px; }
+
+/* tabs */
+.ans-tabs {
+  display: flex; gap: 4px; margin-bottom: 14px;
+}
+.ans-tab {
+  padding: 5px 14px; border-radius: 20px; border: none;
+  font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+  cursor: pointer; background: var(--surface); color: var(--muted);
+  transition: all 0.15s;
+}
+.ans-tab.active { background: var(--accent); color: white; }
+.ans-tab:hover:not(.active) { background: var(--border); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* answer content */
+.ans-content {
+  font-size: 13px; line-height: 1.8; color: #3a3530;
+}
+.ans-content strong { color: var(--text); font-weight: 700; }
+.ans-content code {
+  background: #f0ede8; border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 6px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #c84b31;
+}
+.ans-content pre {
+  background: #1e1b18; border-radius: 8px;
+  padding: 14px; margin: 10px 0; overflow-x: auto;
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+  line-height: 1.7; color: #e8e0d5;
+}
+.ans-content ul, .ans-content ol { padding-left: 20px; margin: 8px 0; }
+.ans-content li { margin: 4px 0; }
+.ans-content h4 { margin: 12px 0 6px; color: var(--accent); font-size: 13px; }
+
+/* counter questions */
+.counter-qs { display: flex; flex-direction: column; gap: 8px; }
+.counter-q-item {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 8px; overflow: hidden;
+}
+.counter-q-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; cursor: pointer;
+}
+.counter-q-arrow { color: var(--muted); font-size: 11px; transition: transform 0.2s; flex-shrink: 0; }
+.counter-q-item.open .counter-q-arrow { transform: rotate(180deg); }
+.counter-q-text { font-size: 13px; font-weight: 600; flex: 1; }
+.cq-ask-btn {
+  background: none; border: 1.5px solid var(--accent);
+  color: var(--accent); border-radius: 6px; padding: 3px 10px;
+  font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0;
+}
+.cq-ask-btn:hover { background: var(--accent); color: white; }
+.cq-ask-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.counter-q-ans { display: none; padding: 0 14px 12px 14px; border-top: 1px solid var(--border); }
+.counter-q-item.open .counter-q-ans { display: block; }
+.counter-q-ans .ans-content { margin-top: 10px; }
+
+/* loading */
+.loading-row {
+  display: flex; gap: 6px; align-items: center;
+  padding: 12px 0; color: var(--muted); font-size: 12px;
+}
+.dot-pulse { display: flex; gap: 5px; }
+.dot-pulse span {
+  width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+  animation: dp 1.1s infinite;
+}
+.dot-pulse span:nth-child(2) { animation-delay: 0.18s; }
+.dot-pulse span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes dp { 0%,80%,100%{transform:scale(0.5);opacity:0.3} 40%{transform:scale(1);opacity:1} }
+
+/* frequency indicator */
+.freq-hot { color: var(--accent); font-size: 12px; }
+
+/* highlight search */
+mark { background: #ffd54f; border-radius: 2px; padding: 0 2px; }
+
+/* search results view */
+.search-results-header {
+  font-size: 13px; color: var(--muted); margin-bottom: 16px;
+  padding: 10px 14px; background: var(--surface); border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  aside { position: static; height: auto; }
+  main { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="logo-dot"></span>Java Interview Prep</div>
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">3–5 Years Experience · 14 Real Interviews</div>
+  <div class="header-stats">
+    <div class="h-stat">
+      <span>Answered</span>
+      <span class="h-stat-val" id="hdr-answered">0</span><span>/</span><span class="h-stat-val" id="hdr-total">510</span>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-bar"><div class="h-stat-fill" id="hdr-bar"></div></div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="sidebar-search">
+      <input class="search-input" id="search-box" placeholder="🔍  Search all 510+ questions..." />
+    </div>
+    <div class="sidebar-sections" id="sidebar-nav"></div>
+  </aside>
+  <main id="main-area">
+    <div id="search-results-panel" class="sec-panel"></div>
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// ALL 27 SECTIONS WITH QUESTIONS + COUNTER QUESTIONS
+// ═══════════════════════════════════════════════════════════════
+const SECTIONS = [
+{
+  id:"s1", emoji:"🎤", title:"Introduction & Project",
+  desc:"Opening questions about your background, project and methodology.",
+  freq:"🔥 Always asked first",
+  questions:[
+    { q:"Can you please introduce yourself?", tags:["intro","behavioral"], counter:["What specific achievement are you most proud of in your career?","How does your experience align with what we're looking for?"] },
+    { q:"Can you explain your recent project in brief?", tags:["project"], counter:["What was the most complex technical challenge in this project?","What would you do differently if you started again?"] },
+    { q:"What are your roles and responsibilities in your current project?", tags:["project"], counter:["Did you ever take ownership beyond your defined role?","How did you handle conflicting priorities?"] },
+    { q:"What is your day-to-day task?", tags:["project"], counter:["How much time do you spend in meetings vs coding?","How do you prioritise tasks?"] },
+    { q:"What technologies are you working on?", tags:["tech-stack"], counter:["Which technology did you find hardest to learn and why?"] },
+    { q:"Which Java version are you using in your project?", tags:["java"], counter:["Why haven't you upgraded to a newer version?","What features would you gain by upgrading?"] },
+    { q:"Is your project monolithic or microservices-based?", tags:["architecture"], counter:["What drove that architectural decision?","What are the pain points of your current architecture?"] },
+    { q:"Which domain are you working in? (Banking/Insurance/E-commerce)", tags:["domain"], counter:["What domain-specific challenges have you faced?"] },
+    { q:"What database are you using in your project?", tags:["database"], counter:["Why that database over alternatives?","Have you faced scaling challenges with it?"] },
+    { q:"Can you describe the architecture of your current application?", tags:["architecture"], counter:["How does data flow from request to database?","What would break first under 10x load?"] },
+    { q:"What is the team size you're working with?", tags:["team"], counter:["How do you handle code ownership in a large team?"] },
+    { q:"Do you follow Agile methodology? Can you explain your sprint cycle?", tags:["agile"], counter:["What do you do when a sprint goal can't be met?"] },
+    { q:"What development methodology does your team follow — Agile or Waterfall?", tags:["agile"], counter:["What are the trade-offs you see in your chosen methodology?"] },
+    { q:"What is the difference between Agile and Waterfall methodology?", tags:["agile"], counter:["When would Waterfall actually be better than Agile?"] }
+  ]
+},
+{
+  id:"s2", emoji:"📦", title:"OOP Concepts",
+  desc:"Inheritance, polymorphism, encapsulation, access modifiers.",
+  freq:"⭐ Asked in 90% of interviews",
+  questions:[
+    { q:"What is polymorphism and can you give a real-world example?", tags:["oop","core"], counter:["What is the difference between compile-time and runtime polymorphism?","Can you show polymorphism without inheritance?"] },
+    { q:"When would you choose a default method in an interface over an abstract class method?", tags:["oop","java8"], counter:["What happens if two interfaces provide the same default method?","Can default methods access instance variables?"] },
+    { q:"What happens if parent and child both have static methods with the same name?", tags:["oop","tricky"], counter:["Why is this method hiding and not overriding?","How does the JVM resolve this at compile time?"] },
+    { q:"Can we override static methods?", tags:["oop"], counter:["Can we override final methods?","What about private methods?"] },
+    { q:"If a child class overrides a method but still wants parent logic, how will you handle this?", tags:["oop"], counter:["What if super() needs to be called conditionally?"] },
+    { q:"What happens if the parent method is final?", tags:["oop"], counter:["What is the use case for final methods?","Can a final class have abstract methods?"] },
+    { q:"You have a Car class and Engine class — which would you use: inheritance or composition?", tags:["oop","design"], counter:["When does composition become better than inheritance?","What is the Liskov Substitution Principle here?"] },
+    { q:"Is method overriding decided at runtime or compile time?", tags:["oop"], counter:["What is dynamic dispatch?","How does the JVM use vtable for this?"] },
+    { q:"Is method overloading decided at runtime or compile time?", tags:["oop"], counter:["Why can't the compiler always resolve overloading at compile time?"] },
+    { q:"Can we override a method by only changing the return type?", tags:["oop","tricky"], counter:["What is covariant return type?","What if we change to a parent type instead?"] },
+    { q:"What happens if you have two overloaded methods — one with int and one with Integer — and you pass an integer value?", tags:["oop","tricky","autoboxing"], counter:["What is the order of preference for widening vs autoboxing?","What if both int and long overloads exist?"] },
+    { q:"How does autoboxing affect method overloading?", tags:["oop","autoboxing"], counter:["What is unboxing and when can it throw NullPointerException?"] },
+    { q:"Can private methods be overridden?", tags:["oop"], counter:["Can private methods be inherited?","What happens if a child class defines a method with same name?"] },
+    { q:"Why must super() be the first line in a constructor?", tags:["oop"], counter:["What problem would arise if super() could be called anywhere?","What if no super() is called explicitly?"] },
+    { q:"Why do we make variables private and create getters/setters?", tags:["encapsulation"], counter:["What if a field should be read-only?","How would you expose a mutable collection safely?"] },
+    { q:"What happens if we make all variables public instead of private with getters/setters?", tags:["encapsulation"], counter:["Can you give a real bug that would occur with public fields?"] },
+    { q:"What is abstraction and how is it different from encapsulation?", tags:["oop"], counter:["How does interface achieve abstraction?","Give a real project example of abstraction."] },
+    { q:"What is the use case of packages?", tags:["java"], counter:["What happens if two packages have the same class name?"] },
+    { q:"What are different access modifiers in Java?", tags:["java"], counter:["What is the default access modifier?","What can protected access from a different package?"] },
+    { q:"What happens internally when you create an object using the new keyword?", tags:["jvm","memory"], counter:["Where is the object stored — stack or heap?","What if the heap is full?"] },
+    { q:"Can an object be created without calling a constructor?", tags:["java","tricky"], counter:["How does deserialization create objects?","How does reflection bypass constructors?"] },
+    { q:"What is the use of the 'this' keyword?", tags:["java"], counter:["Can 'this' be used in a static method?","What is this() constructor chaining?"] },
+    { q:"How does 'this' keyword behave differently inside a lambda vs anonymous inner class?", tags:["java8","tricky"], counter:["What does 'this' refer to inside a Runnable lambda?"] },
+    { q:"What is the use of the 'super' keyword?", tags:["java"], counter:["Can you call super in a static context?","What is super() vs super.method()?"] }
+  ]
+},
+{
+  id:"s3", emoji:"🗂️", title:"Collections",
+  desc:"HashMap, ArrayList, HashSet, iterators, Comparator vs Comparable.",
+  freq:"🔥 Asked in 12/14 interviews",
+  questions:[
+    { q:"How does HashMap work internally?", tags:["collections","core","hot"], counter:["What is the load factor and initial capacity?","What is treeification and at what threshold?","What happens when HashMap reaches capacity?"] },
+    { q:"Explain HashMap internal working after Java 8?", tags:["collections","java8"], counter:["Why was LinkedList replaced with Red-Black Tree?","At what threshold does tree conversion happen?"] },
+    { q:"What is treeification in HashMap?", tags:["collections","java8"], counter:["What is the threshold for tree to revert back to LinkedList?"] },
+    { q:"What is load factor in HashMap?", tags:["collections"], counter:["What is the default load factor?","How does changing load factor affect performance?"] },
+    { q:"What happens when two keys have the same hashCode (collision)?", tags:["collections","tricky"], counter:["How does equals() help resolve collision?","What is the time complexity during high collision?"] },
+    { q:"What happens when you insert a null key in HashMap?", tags:["collections","tricky"], counter:["Where is the null key stored in HashMap?","Can ConcurrentHashMap allow null keys?"] },
+    { q:"Can HashMap have multiple null values?", tags:["collections"], counter:["Can HashSet have a null element?"] },
+    { q:"What is the difference between HashMap and ConcurrentHashMap?", tags:["collections","concurrency","hot"], counter:["How does ConcurrentHashMap locking differ before and after Java 8?","What is CAS in ConcurrentHashMap?","Why does ConcurrentHashMap not allow null keys?"] },
+    { q:"What is CAS (Compare and Swap) in ConcurrentHashMap?", tags:["collections","concurrency"], counter:["What is bucket-level locking?","Is ConcurrentHashMap get() lock-free?"] },
+    { q:"What is the difference between HashMap and HashTable?", tags:["collections"], counter:["Why is HashTable considered legacy?","What replaced HashTable?"] },
+    { q:"What is the difference between HashMap and LinkedHashMap?", tags:["collections"], counter:["How does LinkedHashMap maintain insertion order internally?","When would you prefer TreeMap?"] },
+    { q:"What is the difference between ArrayList and LinkedList?", tags:["collections"], counter:["Why is LinkedList bad for random access?","When would you actually prefer LinkedList?"] },
+    { q:"Which is better for search operation — ArrayList or LinkedList?", tags:["collections"], counter:["What is the time complexity of get() in each?"] },
+    { q:"How does HashSet work internally?", tags:["collections"], counter:["What happens if equals() is overridden but not hashCode()?","What is the contract between equals() and hashCode()?"] },
+    { q:"What is the difference between == and .equals()?", tags:["collections","core"], counter:["What is the difference between equals() and compareTo()?","Can == ever be true for two different String objects?"] },
+    { q:"What happens if you override equals() but not hashCode()?", tags:["collections","tricky"], counter:["How would HashMap behave if hashCode contract is violated?","How would you detect this bug?"] },
+    { q:"How to safely iterate and modify a collection?", tags:["collections"], counter:["What is ConcurrentModificationException and when does it occur?","How can we avoid ConcurrentModificationException?"] },
+    { q:"What is the difference between Comparator and Comparable?", tags:["collections","java8"], counter:["Are Comparator and Comparable functional interfaces?","Can you use both for sorting the same collection?"] },
+    { q:"What is the difference between List, Set, and Map?", tags:["collections"], counter:["Which allows duplicate elements?","Which maintains insertion order?"] },
+    { q:"What is the difference between fail-fast and fail-safe iterators?", tags:["collections"], counter:["Give examples of fail-safe collections.","What is the performance trade-off of fail-safe iterators?"] }
+  ]
+},
+{
+  id:"s4", emoji:"🔤", title:"String & Immutability",
+  desc:"String pool, StringBuilder, immutable class design.",
+  freq:"⭐ Very commonly asked",
+  questions:[
+    { q:"Why is String immutable in Java?", tags:["string","core"], counter:["Is String truly immutable? Can you break it with reflection?","What problems would occur if String were mutable?"] },
+    { q:"Is String thread-safe?", tags:["string","concurrency"], counter:["Can two threads share the same String object safely?"] },
+    { q:"What is the difference between String, StringBuilder, and StringBuffer?", tags:["string"], counter:["Which would you use in a multi-threaded environment?","When is StringBuilder preferred over String concatenation?"] },
+    { q:"How do you make a class immutable?", tags:["string","design"], counter:["If an immutable class has a Date field, how do you ensure immutability?","What if an immutable class contains a List field?","What is defensive copying?"] },
+    { q:"What is defensive copying?", tags:["string","design"], counter:["When is defensive copying not needed?","What is the performance impact of defensive copying?"] },
+    { q:"Can we modify a final object reference?", tags:["java","tricky"], counter:["What is the difference between final variable and immutable object?"] },
+    { q:"What is String pool?", tags:["string","jvm"], counter:["What is the difference between String s1='Hello' and String s2=new String('Hello')?","Where is the String pool stored in Java 8+?"] },
+    { q:"What's the impact of declaring a method as final on inheritance?", tags:["oop"], counter:["Can a final class be abstract?","Why does String class use final?"] }
+  ]
+},
+{
+  id:"s5", emoji:"⚠️", title:"Exception Handling",
+  desc:"Checked vs unchecked, custom exceptions, best practices.",
+  freq:"⭐ Asked in 10/14 interviews",
+  questions:[
+    { q:"What is the difference between checked and unchecked exceptions?", tags:["exceptions"], counter:["Give 3 examples of each.","When would you prefer custom checked exceptions?"] },
+    { q:"Can we throw an exception from a finally block?", tags:["exceptions","tricky"], counter:["What happens to the original exception if finally throws?","Can we have try without catch?"] },
+    { q:"What happens if exception is thrown from finally block?", tags:["exceptions","tricky"], counter:["What happens to the exception from the catch block?","Is this considered good practice?"] },
+    { q:"Can we have multiple catch blocks?", tags:["exceptions"], counter:["What is multi-catch syntax in Java 7?","What is the order of catch blocks?"] },
+    { q:"How do you handle exceptions in your project?", tags:["exceptions","best-practice"], counter:["Do you use @ControllerAdvice? How does it work?","How do you return consistent error responses?"] },
+    { q:"Can you create custom exceptions?", tags:["exceptions"], counter:["When would you extend RuntimeException vs Exception?","How do you add extra fields like error codes to custom exceptions?"] }
+  ]
+},
+{
+  id:"s6", emoji:"🔄", title:"Multithreading & Concurrency",
+  desc:"Threads, synchronization, locks, atomic classes, ExecutorService.",
+  freq:"⭐ Deep dives common",
+  questions:[
+    { q:"How do you create threads in Java?", tags:["threads"], counter:["What is the difference between Thread and Runnable?","Which approach is preferred and why?"] },
+    { q:"What is the use of synchronized keyword?", tags:["threads","synchronization"], counter:["What is the difference between synchronized method and synchronized block?","What are the limitations of synchronized?"] },
+    { q:"What is volatile keyword?", tags:["threads"], counter:["Does volatile guarantee atomicity?","What is the difference between volatile and synchronized?","Can volatile replace synchronized?"] },
+    { q:"What is ReentrantLock?", tags:["threads","lock"], counter:["Why is it called ReentrantLock?","What is fair ordering in ReentrantLock?","When would you prefer ReentrantLock over synchronized?"] },
+    { q:"What is a race condition?", tags:["threads"], counter:["How do you handle race conditions?","Give a real example of a race condition you faced."] },
+    { q:"What is deadlock and how have you detected or prevented it?", tags:["threads"], counter:["What are the four conditions for deadlock?","What is livelock? How is it different from deadlock?"] },
+    { q:"What is AtomicInteger?", tags:["threads","atomic"], counter:["What is the difference between AtomicInteger and volatile int?","How does AtomicInteger use CAS internally?"] },
+    { q:"What is ExecutorService?", tags:["threads","executor"], counter:["What are the different types of thread pools?","What happens to queued tasks when you call shutdown()?"] },
+    { q:"Explain FixedThreadPool, CachedThreadPool, SingleThreadExecutor, ScheduledThreadPool?", tags:["threads","executor"], counter:["If you have 10 tasks and 3 threads, how would you use ExecutorService?","What is the risk of CachedThreadPool?"] },
+    { q:"What is ThreadLocal?", tags:["threads"], counter:["What is the risk of memory leak with ThreadLocal in thread pools?","How do you clean up ThreadLocal?"] },
+    { q:"What is CountDownLatch?", tags:["threads"], counter:["What is the difference between CountDownLatch and CyclicBarrier?","Can a CountDownLatch be reused?"] }
+  ]
+},
+{
+  id:"s7", emoji:"☕", title:"Java 8 Features",
+  desc:"Lambda, functional interfaces, Optional, Stream API, date/time.",
+  freq:"⭐ Coding questions in 13/14 interviews",
+  questions:[
+    { q:"What is a lambda expression?", tags:["java8","lambda"], counter:["How do lambda expressions improve code readability compared to anonymous classes?","When can you NOT use a lambda?"] },
+    { q:"What is a functional interface?", tags:["java8","functional"], counter:["Can functional interfaces have default methods?","What if you add two abstract methods?","What are Predicate, Function, Consumer, Supplier?"] },
+    { q:"What is Optional class?", tags:["java8"], counter:["What problem does Optional solve?","Why is returning Optional from getter not recommended?","What is the difference between Optional.of() and Optional.ofNullable()?"] },
+    { q:"How does Java Stream API work internally?", tags:["java8","streams"], counter:["What is lazy evaluation in streams?","Can streams modify the original collection?","What is the difference between sequential and parallel streams?"] },
+    { q:"What is the difference between intermediate and terminal operations?", tags:["java8","streams"], counter:["Give 5 examples of intermediate operations.","What happens if you call two terminal operations on the same stream?"] },
+    { q:"What is the difference between map() and flatMap()?", tags:["java8","streams","hot"], counter:["Give a real use case for flatMap().","What is the return type difference?"] },
+    { q:"Why were default and static methods introduced in Java 8?", tags:["java8","interface"], counter:["How does this affect backward compatibility?","Can you override a default method?"] },
+    { q:"If two interfaces provide the same default method and your class implements both, how do you resolve the conflict?", tags:["java8","tricky"], counter:["What if one of the interfaces is an abstract class?"] },
+    { q:"How is Java 8 Time API better than old Date and Calendar APIs?", tags:["java8"], counter:["What is the difference between LocalDate, LocalTime, and LocalDateTime?","How do you handle time zones with ZonedDateTime?"] },
+    { q:"What are method references?", tags:["java8"], counter:["What are the four types of method references?","When would you prefer a lambda over a method reference?"] }
+  ]
+},
+{
+  id:"s8", emoji:"🏗️", title:"Design Patterns",
+  desc:"Singleton, Factory, Strategy, Observer, Saga, Circuit Breaker.",
+  freq:"⭐ Deep questions common",
+  questions:[
+    { q:"What is Singleton design pattern and how do you implement it?", tags:["patterns"], counter:["What are the different types of Singleton implementation?","Why is Enum-based Singleton the best?","What is double-checked locking?","Can Singleton be broken using reflection?"] },
+    { q:"What is Factory pattern?", tags:["patterns"], counter:["What is the difference between Factory Method and Abstract Factory?","Give a real-world example from Spring framework."] },
+    { q:"What is Strategy pattern?", tags:["patterns"], counter:["Give a real-world example of Strategy pattern.","How is Strategy different from Template Method pattern?"] },
+    { q:"What is Saga design pattern?", tags:["patterns","microservices"], counter:["What is the difference between choreography and orchestration in Saga?","How do you handle rollback in Saga?"] },
+    { q:"What is Circuit Breaker design pattern?", tags:["patterns","microservices"], counter:["What are the three states of a Circuit Breaker?","What is the difference between Circuit Breaker and Retry pattern?","Have you used Resilience4j?"] },
+    { q:"What design patterns are you using in your project?", tags:["patterns","behavioral"], counter:["Can you walk through a specific pattern implementation in your codebase?","Which pattern gave you the most value?"] }
+  ]
+},
+{
+  id:"s9", emoji:"🌱", title:"Spring Framework",
+  desc:"IoC, DI, BeanFactory vs ApplicationContext.",
+  freq:"⭐ Foundation questions",
+  questions:[
+    { q:"What is Dependency Injection?", tags:["spring","di"], counter:["What is Inversion of Control (IoC)?","How does Spring IoC container work?","What are the types of dependency injection?"] },
+    { q:"What is the difference between BeanFactory and ApplicationContext?", tags:["spring"], counter:["In what scenario would BeanFactory be preferred?","What extra features does ApplicationContext provide?"] },
+    { q:"How does Spring IoC container work?", tags:["spring"], counter:["What is the difference between eager and lazy bean initialization?","What happens if a required bean is not found?"] }
+  ]
+},
+{
+  id:"s10", emoji:"🥾", title:"Spring Boot Fundamentals",
+  desc:"Auto-configuration, annotations, starters, bean management.",
+  freq:"🔥 Asked in 11/14 interviews",
+  questions:[
+    { q:"What does @SpringBootApplication annotation do?", tags:["spring-boot"], counter:["What are the three annotations combined in @SpringBootApplication?","Can you use each of those three separately?"] },
+    { q:"How does Spring Boot auto-configuration work?", tags:["spring-boot","hot"], counter:["How does Spring Boot decide what to configure?","Can you customize or override default auto-configuration?","How to disable a specific auto-configuration?"] },
+    { q:"What is the purpose of @Autowired annotation?", tags:["spring-boot","di"], counter:["What issues might arise from overusing @Autowired?","What is the difference between @Autowired on constructor vs field?"] },
+    { q:"What is the difference between @Component, @Service, and @Repository?", tags:["spring-boot"], counter:["What extra behaviour does @Repository add?","What is @Controller vs @RestController?"] },
+    { q:"What are the types of dependency injection in Spring?", tags:["spring-boot","di"], counter:["Why is constructor injection preferred over field injection?","Why is field injection bad?"] },
+    { q:"What are different Spring bean scopes?", tags:["spring-boot","beans"], counter:["What is the default bean scope?","What is a prototype bean and when would you use it?","What are request and session scopes?"] },
+    { q:"Explain the lifecycle of a Spring bean?", tags:["spring-boot","beans"], counter:["What is @PostConstruct used for?","What is @PreDestroy?","What happens during the destruction phase?"] },
+    { q:"What happens if two beans of the same type exist without @Primary or @Qualifier?", tags:["spring-boot","beans","tricky"], counter:["What is the difference between @Qualifier and @Primary?","What exception is thrown?"] },
+    { q:"What is circular dependency in Spring?", tags:["spring-boot","tricky"], counter:["How can you resolve circular dependency?","What annotation can break the cycle?","Have you faced this in your project?"] },
+    { q:"What are Spring Boot Actuators?", tags:["spring-boot","actuator"], counter:["What are some important actuator endpoints?","How do you secure actuator endpoints?"] },
+    { q:"What is the purpose of Spring Boot starters?", tags:["spring-boot","starters"], counter:["What does spring-boot-starter-web include?","Can we change the default embedded server?"] }
+  ]
+},
+{
+  id:"s11", emoji:"⚙️", title:"Spring Boot Advanced",
+  desc:"Profiles, configuration, properties, YAML, externalized config.",
+  freq:"⭐ Follow-up heavy",
+  questions:[
+    { q:"What is Spring Profile?", tags:["spring-boot","profiles"], counter:["How do you activate a specific Spring profile?","Can activating multiple profiles cause conflicts?","What is the priority order of configuration properties?"] },
+    { q:"What is @ConfigurationProperties annotation?", tags:["spring-boot"], counter:["What is the difference between @Value and @ConfigurationProperties?","How do you validate config properties?"] },
+    { q:"What is the order of precedence in Spring Boot configuration?", tags:["spring-boot"], counter:["Does command-line argument override application.properties?","Where does environment variable sit in the order?"] },
+    { q:"What is the difference between application.properties and application.yml?", tags:["spring-boot"], counter:["What is the advantage of YAML over properties file?","Can you use both in the same project?"] },
+    { q:"How do you manage external configurations in Spring Boot?", tags:["spring-boot","config"], counter:["What is Spring Cloud Config?","How do you inject secrets securely?"] }
+  ]
+},
+{
+  id:"s12", emoji:"🌐", title:"REST API Development",
+  desc:"REST design, request/response handling, validation, versioning.",
+  freq:"⭐ Practical questions",
+  questions:[
+    { q:"What are the best practices while creating REST APIs?", tags:["rest"], counter:["How do you version REST APIs?","What is the difference between URI versioning and header versioning?"] },
+    { q:"What is the difference between @RequestParam and @PathVariable?", tags:["rest"], counter:["Can you use both in the same method?","What happens if a required @RequestParam is missing?"] },
+    { q:"What is the difference between @RequestBody and @RequestParam?", tags:["rest"], counter:["When would you use @RequestParam vs @RequestBody for a POST?"] },
+    { q:"What is the difference between ResponseEntity and returning object directly?", tags:["rest"], counter:["When would you use ResponseEntity?","How do you set custom HTTP status codes?"] },
+    { q:"How do you handle exceptions in REST APIs?", tags:["rest","exceptions"], counter:["What is @RestControllerAdvice?","What is @ExceptionHandler?","What happens if no exception handler is defined?"] },
+    { q:"How to handle validation in REST API?", tags:["rest","validation"], counter:["What is the difference between @Valid and @Validated?","How do you return field-level validation errors?"] },
+    { q:"What is idempotency in REST API?", tags:["rest"], counter:["Which HTTP methods are idempotent?","How would you avoid duplicate POST requests?","How do you make REST APIs idempotent?"] }
+  ]
+},
+{
+  id:"s13", emoji:"🗄️", title:"Spring Data JPA & Hibernate",
+  desc:"Repositories, fetch types, relationships, N+1, transactions.",
+  freq:"🔥 Asked in 8/14 interviews",
+  questions:[
+    { q:"What is the difference between JpaRepository, CrudRepository, and PagingAndSortingRepository?", tags:["jpa"], counter:["What extra methods does JpaRepository provide?","What are the limitations of Spring repositories?"] },
+    { q:"What is the difference between LAZY and EAGER loading?", tags:["jpa","hot"], counter:["What is lazy initialization exception?","How do you fix N+1 query problem?","What lazy loading issues occur in REST APIs?"] },
+    { q:"What is N+1 query problem?", tags:["jpa","performance","hot"], counter:["How do you solve N+1 using JOIN FETCH?","What is @EntityGraph?","How do you detect N+1 in production?"] },
+    { q:"What is the difference between @OneToMany and @ManyToMany?", tags:["jpa"], counter:["What is the difference between unidirectional and bidirectional mapping?","What is the owning side?"] },
+    { q:"How do you write custom queries in Spring Data JPA?", tags:["jpa"], counter:["What is the difference between JPQL and Native queries?","When would you use @NativeQuery?"] },
+    { q:"What is optimistic vs pessimistic locking?", tags:["jpa","concurrency"], counter:["Which would you choose for high concurrency update scenarios?","What exception does optimistic lock throw on conflict?"] },
+    { q:"How do you implement soft delete in Spring Data JPA?", tags:["jpa"], counter:["How do you ensure soft-deleted records don't appear in queries?","What is @SQLDelete?"] },
+    { q:"What is @Transactional annotation and how does it work internally?", tags:["jpa","spring","hot"], counter:["What is propagation in @Transactional?","Why are private methods not transactional?","When will transaction not work?","What are different propagation levels?"] }
+  ]
+},
+{
+  id:"s14", emoji:"💾", title:"Database & SQL",
+  desc:"Query optimization, indexing, sharding, migrations.",
+  freq:"⭐ Often scenario-based",
+  questions:[
+    { q:"How do you optimize queries while fetching or saving data?", tags:["database","performance"], counter:["A query works fine locally but is slow in production — how would you debug it?","How do you decide where indexes are required?"] },
+    { q:"What is database indexing and when to use it?", tags:["database"], counter:["What are the downsides of too many indexes?","What is a composite index?","What is a covering index?"] },
+    { q:"What is the difference between save() and saveAndFlush() in JPA?", tags:["jpa","database"], counter:["Can save() succeed but DB rollback later?","When would you use saveAndFlush()?"] },
+    { q:"Do you know about database sharding?", tags:["database","scaling"], counter:["What are the trade-offs of horizontal vs vertical sharding?","How do you handle cross-shard queries?"] },
+    { q:"Have you worked with database migration tools like Flyway or Liquibase?", tags:["database","devops"], counter:["What is the difference between Flyway and Liquibase?","How do you roll back a migration?"] },
+    { q:"What is the difference between save() and saveAndFlush()?", tags:["jpa"], counter:["What is the difference between flush and commit?","When is the Hibernate session flushed?"] }
+  ]
+},
+{
+  id:"s15", emoji:"🔬", title:"Microservices Architecture",
+  desc:"Design principles, monolith vs microservices, database sharing.",
+  freq:"⭐ Architecture questions",
+  questions:[
+    { q:"What is the difference between monolithic and microservices architecture?", tags:["microservices"], counter:["Which would you prefer and why?","Will microservices always be the best choice?"] },
+    { q:"What are the main challenges in designing microservices-based applications?", tags:["microservices"], counter:["How do you ensure services are loosely coupled?","What is eventual consistency?"] },
+    { q:"Should microservices share a database?", tags:["microservices","design"], counter:["What is the database-per-service pattern?","How do you handle data consistency without a shared database?"] },
+    { q:"What challenges would you face while migrating from monolithic to microservices?", tags:["microservices"], counter:["What is the Strangler Fig pattern?","How do you avoid big-bang migration?"] }
+  ]
+},
+{
+  id:"s16", emoji:"📡", title:"Microservices Communication",
+  desc:"REST, Kafka, RabbitMQ, service discovery, API Gateway.",
+  freq:"🔥 Asked in 10/14 interviews",
+  questions:[
+    { q:"How do microservices communicate with each other?", tags:["microservices","communication"], counter:["What is the difference between synchronous and asynchronous communication?","When would you use synchronous vs asynchronous?"] },
+    { q:"What is Service Registry (Eureka)?", tags:["microservices","eureka"], counter:["What happens if Eureka server goes down?","How does client-side load balancing work?"] },
+    { q:"What is API Gateway?", tags:["microservices","gateway"], counter:["What are the benefits of API Gateway?","What is the difference between API Gateway and load balancer?"] },
+    { q:"How does Kafka work?", tags:["kafka","microservices"], counter:["What is the difference between Kafka and RabbitMQ?","When would you use Kafka vs RabbitMQ?","What is a consumer group in Kafka?"] }
+  ]
+},
+{
+  id:"s17", emoji:"🛡️", title:"Microservices Resilience",
+  desc:"Circuit breaker, retry, timeout, Saga pattern.",
+  freq:"⭐ Deep dives common",
+  questions:[
+    { q:"What is Circuit Breaker pattern in microservices?", tags:["microservices","resilience"], counter:["What happens when the fallback method itself fails?","What are the three states of a Circuit Breaker?","Have you used Resilience4j?"] },
+    { q:"If one microservice is responding very slowly affecting the whole system, how would you diagnose and fix?", tags:["microservices","scenario"], counter:["What is timeout pattern?","What is bulkhead pattern?","How would you add observability to diagnose this?"] },
+    { q:"What is Saga pattern for distributed transactions?", tags:["microservices","patterns"], counter:["What is the difference between choreography and orchestration in Saga?","How do you handle rollback in choreography-based Saga?"] },
+    { q:"What is retry pattern?", tags:["microservices","resilience"], counter:["What is exponential backoff?","How do you avoid retry storms?","When should you NOT retry?"] }
+  ]
+},
+{
+  id:"s18", emoji:"🔒", title:"Spring Security",
+  desc:"Authentication, authorization, JWT, OAuth2, method security.",
+  freq:"⭐ JWT always asked",
+  questions:[
+    { q:"What are authentication and authorization?", tags:["security"], counter:["What is the difference between authentication and authorization?","How does Spring Security handle both?"] },
+    { q:"What is JWT token and why do we use it?", tags:["security","jwt","hot"], counter:["How do you implement JWT in Spring Boot?","How would you handle token expiration?","How do you validate a JWT?"] },
+    { q:"What is the difference between OAuth2 and JWT-based authentication?", tags:["security","oauth2"], counter:["What is the difference between Authorization Code flow and Client Credentials flow?","When would you use OAuth2?"] },
+    { q:"What are @PreAuthorize, @PostAuthorize, @Secured annotations?", tags:["security"], counter:["What is the difference between @PreAuthorize and @Secured?","How do you enable method-level security?"] }
+  ]
+},
+{
+  id:"s19", emoji:"🧪", title:"Testing",
+  desc:"JUnit 5, Mockito, integration testing, code coverage.",
+  freq:"⭐ Often practical",
+  questions:[
+    { q:"What is the difference between JUnit 4 and JUnit 5?", tags:["testing"], counter:["What is the difference between @Before and @BeforeEach?","What is @ExtendWith in JUnit 5?"] },
+    { q:"What is the difference between @Mock and @InjectMocks in Mockito?", tags:["testing","mockito"], counter:["What is the difference between @Mock and @MockBean?","What is when().thenReturn() vs doReturn()?"] },
+    { q:"What is the difference between unit testing, integration testing, and end-to-end testing?", tags:["testing"], counter:["When would you write integration tests vs unit tests?","What is @SpringBootTest?"] },
+    { q:"How do you ensure code coverage?", tags:["testing"], counter:["What tools do you use for code coverage?","What is a good code coverage target?","Is 100% coverage always the goal?"] }
+  ]
+},
+{
+  id:"s20", emoji:"📦", title:"Build Tools (Maven)",
+  desc:"Maven lifecycle, dependency management, pom.xml.",
+  freq:"⭐ Basic but tricky",
+  questions:[
+    { q:"Can you explain Maven lifecycle and its phases?", tags:["maven"], counter:["What is the difference between Maven clean and Maven install?","What are the three lifecycles in Maven?"] },
+    { q:"How does Maven manage dependencies?", tags:["maven"], counter:["From where does Maven fetch dependencies?","What is the Maven local repository (.m2)?","How do you handle version conflicts?"] },
+    { q:"What is the difference between Maven and Gradle?", tags:["maven"], counter:["When would you choose Gradle over Maven?","What is incremental build in Gradle?"] }
+  ]
+},
+{
+  id:"s21", emoji:"🌿", title:"Git & Version Control",
+  desc:"Day-to-day commands, branching, merging, conflict resolution.",
+  freq:"⭐ 8/14 interviews",
+  questions:[
+    { q:"What are day-to-day Git commands you use?", tags:["git"], counter:["What is the difference between git pull and git fetch?","What is git stash?"] },
+    { q:"What is the difference between git merge and git rebase?", tags:["git"], counter:["When would you use rebase vs merge?","What is the danger of rebasing shared branches?"] },
+    { q:"How do you resolve Git conflicts?", tags:["git"], counter:["How do you prevent merge conflicts?","What is the difference between ours and theirs strategy?"] },
+    { q:"What is git cherry-pick?", tags:["git"], counter:["When would you cherry-pick instead of merge?","What is git squash?"] }
+  ]
+},
+{
+  id:"s22", emoji:"🐳", title:"DevOps & Deployment",
+  desc:"Docker, Kubernetes, CI/CD, AWS, SonarQube.",
+  freq:"⭐ Cloud questions rising",
+  questions:[
+    { q:"What is Docker and how do you use it in your project?", tags:["docker"], counter:["What is a Dockerfile?","What is the difference between COPY and ADD in Dockerfile?","What is docker-compose?"] },
+    { q:"How does Kubernetes help in managing containers?", tags:["kubernetes"], counter:["What is a Pod in Kubernetes?","What is the difference between Deployment and StatefulSet?","What happens when a Pod crashes?"] },
+    { q:"What is CI/CD pipeline?", tags:["cicd"], counter:["What are the stages in your CI/CD pipeline?","Have you worked with Jenkins or GitHub Actions?","How do you handle failed deployments?"] },
+    { q:"How do you use SonarQube for maintaining code quality?", tags:["quality"], counter:["What is a SonarQube quality gate?","Can you give an example of an issue SonarQube helped resolve?"] },
+    { q:"What AWS services have you used?", tags:["aws","cloud"], counter:["What is the difference between EC2 and Lambda?","Have you used S3, RDS, SQS?"] }
+  ]
+},
+{
+  id:"s23", emoji:"⚡", title:"Caching",
+  desc:"Spring caching annotations, Redis, cache invalidation.",
+  freq:"⭐ Often overlooked topic",
+  questions:[
+    { q:"How do you implement caching in Spring Boot?", tags:["caching"], counter:["What caching mechanism are you using?","Have you used Redis?","What is @Cacheable, @CacheEvict, @CachePut?"] },
+    { q:"What are distributed cache problems?", tags:["caching"], counter:["How do you handle cache invalidation?","What is cache stampede?","When would you prefer caching vs database indexing?"] }
+  ]
+},
+{
+  id:"s24", emoji:"📊", title:"Logging & Monitoring",
+  desc:"Log4j, SLF4J, ELK, distributed tracing, Grafana.",
+  freq:"⭐ Production experience",
+  questions:[
+    { q:"How do you implement logging in Spring Boot?", tags:["logging"], counter:["What is the difference between Log4j, Logback, and SLF4J?","How do you set log levels per package?"] },
+    { q:"How do you debug production issues?", tags:["logging","operations"], counter:["How do you trace a request across multiple microservices?","Have you used Zipkin or Jaeger for distributed tracing?"] },
+    { q:"What tools would you use for monitoring Spring Boot application?", tags:["monitoring"], counter:["Have you used Grafana and Prometheus?","What metrics do you track?","Have you used ELK stack?"] }
+  ]
+},
+{
+  id:"s25", emoji:"💻", title:"Stream API Coding",
+  desc:"Practical coding problems using Java 8 Streams.",
+  freq:"🔥 Asked in 13/14 interviews — always prepare this",
+  questions:[
+    { q:"Given a list of integers, print the sum of all elements using Stream API", tags:["coding","streams"], counter:["How would you do the same with IntStream?","How would you sum a specific field from a list of objects?"] },
+    { q:"Print the first repeating integer from a list", tags:["coding","streams"], counter:["What if there are no repeating integers?","How would you find ALL repeating integers?"] },
+    { q:"Print sum of squares of integers from a list", tags:["coding","streams"], counter:["How would you use mapToLong for very large numbers?"] },
+    { q:"Print average of numbers greater than 10", tags:["coding","streams"], counter:["What does OptionalDouble.getAsDouble() throw if empty?"] },
+    { q:"Convert list of strings to uppercase", tags:["coding","streams"], counter:["How would you also filter out null or blank strings?"] },
+    { q:"Print the third highest number from a list", tags:["coding","streams"], counter:["How would you handle duplicates?","What if the list has fewer than 3 elements?"] },
+    { q:"Sort strings by length using Stream API", tags:["coding","streams"], counter:["How would you sort by length then alphabetically?"] },
+    { q:"Find first non-repeating character from a string", tags:["coding","streams"], counter:["How would you handle case-insensitivity?","What is the time complexity?"] },
+    { q:"Given a list, find top 3 largest numbers", tags:["coding","streams"], counter:["What is the difference between sorted().limit() vs using max()?"] },
+    { q:"Group employees by department", tags:["coding","streams"], counter:["How would you count employees per department?","How would you find the highest paid per department?"] },
+    { q:"Find average salary by department", tags:["coding","streams"], counter:["How would you use Collectors.averagingDouble()?"] },
+    { q:"Count frequency of each character in a string", tags:["coding","streams"], counter:["How would you find the most frequent character?"] },
+    { q:"Flatten list of lists using flatMap", tags:["coding","streams"], counter:["What is the difference between map() and flatMap() in this context?"] },
+    { q:"Find second highest salary from employee list", tags:["coding","streams"], counter:["How do you handle employees with the same highest salary?"] },
+    { q:"Sort employees by department then by salary descending", tags:["coding","streams"], counter:["How would you use Comparator.thenComparing()?"] },
+    { q:"Convert list of objects to Map using Streams", tags:["coding","streams"], counter:["What exception occurs if two objects have the same key?","How would you handle duplicate keys?"] },
+    { q:"Find common elements between two lists", tags:["coding","streams"], counter:["What is the time complexity of your solution?","How would you use Set.retainAll() instead?"] }
+  ]
+},
+{
+  id:"s26", emoji:"🎯", title:"Scenario-Based",
+  desc:"Real-world architecture and troubleshooting challenges.",
+  freq:"⭐ Closing round questions",
+  questions:[
+    { q:"Your REST API response time is increasing after database growth. How do you optimize it?", tags:["scenario","performance"], counter:["How would you identify the slow queries?","When would you add caching?","How would you use database partitioning?"] },
+    { q:"How would you design a notification service that sends SMS and email asynchronously?", tags:["scenario","design"], counter:["How do you ensure delivery if the service crashes mid-processing?","How do you handle rate limiting from SMS providers?"] },
+    { q:"You have an e-commerce system where payment service is down. How will you design so order service still works?", tags:["scenario","resilience"], counter:["How do you handle payment confirmation asynchronously?","What is the outbox pattern?"] },
+    { q:"Three microservices: A calls B, B calls C, and C is slow making entire chain slow. How to handle?", tags:["scenario","microservices"], counter:["Where would you add a circuit breaker?","How would you add timeouts at each level?"] },
+    { q:"Your application is working fine locally but failing in pipeline. How would you analyze?", tags:["scenario","cicd"], counter:["What environment differences could cause this?","How would you reproduce the pipeline environment locally?"] },
+    { q:"If you have millions of records and need to fetch with pagination efficiently, how would you implement?", tags:["scenario","database"], counter:["What is cursor-based pagination vs offset pagination?","What are the downsides of OFFSET for large datasets?"] },
+    { q:"How would you design a URL shortener service?", tags:["scenario","design"], counter:["How would you handle 10 billion shortened URLs?","How do you handle redirects at high throughput?","What database would you use?"] },
+    { q:"If your application starts very slowly, how will you find what is slowing down startup?", tags:["scenario","performance"], counter:["How would you use Spring Boot actuator to diagnose?","What lazy initialization techniques exist?"] }
+  ]
+},
+{
+  id:"s27", emoji:"🧠", title:"Behavioral Questions",
+  desc:"Teamwork, problem-solving, growth mindset, communication.",
+  freq:"⭐ Last 10 minutes of interview",
+  questions:[
+    { q:"Can you walk me through a piece of Java code you refactored because it became hard to maintain?", tags:["behavioral"], counter:["What metrics showed improvement after the refactor?","What design pattern did you apply?"] },
+    { q:"Tell me about a time when you had a production issue. How did you debug and resolve it?", tags:["behavioral"], counter:["What monitoring was in place?","What post-mortem did you conduct?"] },
+    { q:"How do you handle code reviews and feedback?", tags:["behavioral"], counter:["How do you give constructive feedback to a junior?","Have you ever disagreed with a reviewer?"] },
+    { q:"How do you keep up with continuous evolution of the Java ecosystem?", tags:["behavioral","learning"], counter:["What Java feature have you recently learned?","How do you evaluate if a new tool is worth adopting?"] },
+    { q:"What's your approach to error handling and logging?", tags:["behavioral","technical"], counter:["What information do you always log?","How do you handle sensitive data in logs?"] },
+    { q:"If you could redesign one part of your last project, what would you improve?", tags:["behavioral"], counter:["What stopped you from doing it at the time?","How would you measure success of that improvement?"] },
+    { q:"Do you have any questions for me?", tags:["behavioral"], counter:["What does the team's tech stack look like?","How does the team handle technical debt?","What does success look like in this role in the first 6 months?"] }
+  ]
+}
+];
+
+// ═══════════════════════════════════════════════════════════════
+// BUILD UI
+// ═══════════════════════════════════════════════════════════════
+const sidebar = document.getElementById('sidebar-nav');
+const mainArea = document.getElementById('main-area');
+let totalAnswered = 0;
+const totalQuestions = SECTIONS.reduce((a,s) => a + s.questions.length, 0);
+document.getElementById('hdr-total').textContent = totalQuestions;
+
+function buildTag(t) {
+  const cls = t === 'hot' ? 'red' : t.includes('java8') || t.includes('streams') ? 'green' : 'orange';
+  return `<span class="q-tag ${cls === 'red' ? '' : cls}">${t === 'hot' ? '🔥 hot' : t}</span>`;
+}
+
+SECTIONS.forEach((sec, si) => {
+  // Sidebar button
+  const btn = document.createElement('button');
+  btn.className = 'section-btn' + (si===0?' active':'');
+  btn.dataset.secid = sec.id;
+  btn.innerHTML = `<span class="semoji">${sec.emoji}</span><span style="flex:1">${sec.title}</span><span class="scount">${sec.questions.length}</span>`;
+  btn.addEventListener('click', () => activateSection(sec.id));
+  sidebar.appendChild(btn);
+
+  // Panel
+  const panel = document.createElement('div');
+  panel.className = 'sec-panel' + (si===0?' active':'');
+  panel.id = 'panel-'+sec.id;
+
+  panel.innerHTML = `
+    <div class="sec-head">
+      <div class="sec-head-left">
+        <div class="sec-title">${sec.emoji} ${sec.title}</div>
+        <div class="sec-desc">${sec.desc}</div>
+        <div style="font-size:11px;color:var(--accent);margin-top:4px;font-weight:600">${sec.freq}</div>
+        <div class="sec-progress">
+          <div class="sec-prog-bar"><div class="sec-prog-fill" id="prog-${sec.id}"></div></div>
+          <span class="sec-prog-text" id="prog-text-${sec.id}">0 / ${sec.questions.length}</span>
+        </div>
+      </div>
+      <button class="ask-all-btn" id="askall-${sec.id}" onclick="askAll('${sec.id}')">⚡ Ask All</button>
+    </div>
+  `;
+
+  sec.questions.forEach((item, qi) => {
+    const cardId = `${sec.id}-${qi}`;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'qcard-'+cardId;
+
+    const tagsHtml = (item.tags||[]).map(buildTag).join('');
+    const counterItems = (item.counter||[]).map((cq,ci) => {
+      const cid = `${cardId}-cq${ci}`;
+      return `
+        <div class="counter-q-item" id="${cid}">
+          <div class="counter-q-header" onclick="toggleCQ('${cid}')">
+            <span class="counter-q-arrow">▾</span>
+            <span class="counter-q-text">${cq}</span>
+            <button class="cq-ask-btn" id="cqbtn-${cid}" onclick="event.stopPropagation();askCQ('${cid}','${escQ(cq)}','${escQ(item.q)}')">Ask AI</button>
+          </div>
+          <div class="counter-q-ans" id="cqans-${cid}"></div>
+        </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="q-header" onclick="toggleCard('${cardId}')">
+        <span class="q-num">${String(qi+1).padStart(2,'0')}</span>
+        <div class="q-body">
+          <div class="q-text">${item.q}</div>
+          <div class="q-tags">${tagsHtml}</div>
+        </div>
+        <div class="q-controls">
+          <button class="ask-btn" id="askbtn-${cardId}" onclick="event.stopPropagation();askMain('${cardId}','${escQ(item.q)}')">Ask AI ✦</button>
+          <span class="chevron">▾</span>
+        </div>
+      </div>
+      <div class="ans-panel" id="anspanel-${cardId}">
+        <div class="ans-inner">
+          <div class="ans-tabs">
+            <button class="ans-tab active" onclick="switchTab('${cardId}','answer',this)">Answer</button>
+            ${item.counter?.length ? `<button class="ans-tab" onclick="switchTab('${cardId}','followup',this)">Follow-ups (${item.counter.length})</button>` : ''}
+          </div>
+          <div class="tab-content active" id="tab-answer-${cardId}">
+            <div class="ans-content" id="maincontent-${cardId}"><span style="color:var(--muted);font-size:13px">Click <strong>Ask AI ✦</strong> to get the answer.</span></div>
+          </div>
+          ${item.counter?.length ? `<div class="tab-content" id="tab-followup-${cardId}"><div class="counter-qs">${counterItems}</div></div>` : ''}
+        </div>
+      </div>
+    `;
+    panel.appendChild(card);
+  });
+
+  mainArea.appendChild(panel);
+});
+
+function escQ(q) { return q.replace(/'/g,"&#39;").replace(/"/g,'&quot;'); }
+
+function activateSection(id) {
+  document.querySelectorAll('.section-btn').forEach(b => b.classList.toggle('active', b.dataset.secid===id));
+  document.querySelectorAll('.sec-panel').forEach(p => p.classList.toggle('active', p.id==='panel-'+id));
+  document.getElementById('search-results-panel').classList.remove('active');
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('qcard-'+id);
+  card.classList.toggle('open');
+}
+
+function toggleCQ(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+function switchTab(cardId, tab, btn) {
+  document.querySelectorAll(`#anspanel-${cardId} .ans-tab`).forEach(t => t.classList.remove('active'));
+  document.querySelectorAll(`#anspanel-${cardId} .tab-content`).forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`tab-${tab}-${cardId}`)?.classList.add('active');
+}
+
+async function callAI(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1000,
+      messages:[{role:'user', content:prompt}]
+    })
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text || 'No response.';
+}
+
+async function askMain(cardId, question) {
+  const btn = document.getElementById('askbtn-'+cardId);
+  const contentEl = document.getElementById('maincontent-'+cardId);
+  const card = document.getElementById('qcard-'+cardId);
+
+  if (card.classList.contains('answered') && !card.classList.contains('open')) {
+    card.classList.add('open'); return;
+  }
+  btn.disabled = true; btn.textContent = '...';
+  card.classList.add('open');
+  contentEl.innerHTML = `<div class="loading-row"><div class="dot-pulse"><span></span><span></span><span></span></div></div>`;
+
+  try {
+    const text = await callAI(`You are a Java interview coach for candidates with 3-5 years of experience. 
+Answer this interview question in simple, clear language with:
+- Short explanation in plain English
+- Key points a interviewer wants to hear
+- A concise code example if relevant
+
+Format using basic HTML: <strong>, <code>, <pre>, <ul>/<li>. No markdown. Keep under 300 words.
+
+Question: ${question}`);
+
+    contentEl.innerHTML = `<div class="ans-content">${text}</div>`;
+    card.classList.add('answered');
+    btn.textContent = 'Done ✓'; btn.classList.add('done'); btn.disabled = false;
+    totalAnswered++;
+    updateGlobalProgress();
+    updateSectionProgress(cardId.split('-')[0]);
+  } catch(e) {
+    contentEl.innerHTML = `<div class="ans-content" style="color:#c00">⚠️ Error. Please try again.</div>`;
+    btn.textContent = 'Retry'; btn.disabled = false;
+  }
+}
+
+async function askCQ(cid, question, parentQ) {
+  const btn = document.getElementById('cqbtn-'+cid);
+  const ansEl = document.getElementById('cqans-'+cid);
+  const item = document.getElementById(cid);
+
+  btn.disabled = true; btn.textContent = '...';
+  item.classList.add('open');
+  ansEl.innerHTML = `<div class="loading-row"><div class="dot-pulse"><span></span><span></span><span></span></div></div>`;
+
+  try {
+    const text = await callAI(`You are a Java interview coach. 
+A candidate was asked: "${parentQ}"
+The interviewer follows up with: "${question}"
+
+Give a sharp, concise answer (under 200 words). Format with basic HTML: <strong>, <code>, <pre>, <ul>/<li>. No markdown.`);
+    ansEl.innerHTML = `<div class="ans-content" style="margin-top:10px">${text}</div>`;
+    btn.textContent = 'Done ✓'; btn.disabled = false;
+  } catch(e) {
+    ansEl.innerHTML = `<div class="ans-content" style="color:#c00">⚠️ Error. Retry.</div>`;
+    btn.textContent = 'Retry'; btn.disabled = false;
+  }
+}
+
+async function askAll(secId) {
+  const sec = SECTIONS.find(s=>s.id===secId);
+  if(!sec) return;
+  const btn = document.getElementById('askall-'+secId);
+  btn.disabled = true; btn.textContent = '⏳ Loading...';
+
+  for(let qi=0; qi<sec.questions.length; qi++){
+    const cardId = `${secId}-${qi}`;
+    const card = document.getElementById('qcard-'+cardId);
+    if(!card.classList.contains('answered')){
+      await askMain(cardId, sec.questions[qi].q);
+      await new Promise(r=>setTimeout(r,600));
+    }
+  }
+  btn.textContent = '✓ All Done'; btn.disabled = false;
+}
+
+function updateGlobalProgress() {
+  const pct = Math.round((totalAnswered/totalQuestions)*100);
+  document.getElementById('hdr-answered').textContent = totalAnswered;
+  document.getElementById('hdr-bar').style.width = pct+'%';
+}
+
+function updateSectionProgress(secId) {
+  const sec = SECTIONS.find(s=>s.id===secId);
+  if(!sec) return;
+  const answered = document.querySelectorAll(`#panel-${secId} .q-card.answered`).length;
+  const pct = (answered/sec.questions.length)*100;
+  document.getElementById('prog-'+secId).style.width = pct+'%';
+  document.getElementById('prog-text-'+secId).textContent = `${answered} / ${sec.questions.length}`;
+}
+
+// ── SEARCH ─────────────────────────────────────────────────────
+const searchBox = document.getElementById('search-box');
+const searchPanel = document.getElementById('search-results-panel');
+
+searchBox.addEventListener('input', function(){
+  const val = this.value.trim().toLowerCase();
+  if(!val) {
+    searchPanel.classList.remove('active');
+    // re-show last active section
+    const activeBtn = document.querySelector('.section-btn.active');
+    if(activeBtn) { document.getElementById('panel-'+activeBtn.dataset.secid)?.classList.add('active'); }
+    return;
+  }
+  // hide all section panels
+  document.querySelectorAll('.sec-panel:not(#search-results-panel)').forEach(p=>p.classList.remove('active'));
+  searchPanel.classList.add('active');
+
+  const results = [];
+  SECTIONS.forEach(sec => {
+    sec.questions.forEach((item,qi) => {
+      if(item.q.toLowerCase().includes(val)){
+        results.push({sec, item, qi});
+      }
+    });
+  });
+
+  if(!results.length){
+    searchPanel.innerHTML = `<div class="search-results-header">No results for "<strong>${val}</strong>"</div>`;
+    return;
+  }
+
+  const highlight = t => t.replace(new RegExp(`(${val})`,'gi'),'<mark>$1</mark>');
+  searchPanel.innerHTML = `<div class="search-results-header">Found <strong>${results.length}</strong> results for "<strong>${val}</strong>"</div>`;
+
+  results.forEach(({sec,item,qi})=>{
+    const cardId = `search-${sec.id}-${qi}`;
+    const div = document.createElement('div');
+    div.className='q-card';
+    div.id='qcard-'+cardId;
+    div.innerHTML=`
+      <div class="q-header" onclick="toggleCard('${cardId}')">
+        <span class="q-num" style="font-size:10px;color:var(--muted)">${sec.emoji}</span>
+        <div class="q-body">
+          <div style="font-size:10px;color:var(--accent);font-weight:600;margin-bottom:3px">${sec.title}</div>
+          <div class="q-text">${highlight(item.q)}</div>
+        </div>
+        <div class="q-controls">
+          <button class="ask-btn" id="askbtn-${cardId}" onclick="event.stopPropagation();askMain('${cardId}','${escQ(item.q)}')">Ask AI ✦</button>
+          <span class="chevron">▾</span>
+        </div>
+      </div>
+      <div class="ans-panel" id="anspanel-${cardId}">
+        <div class="ans-inner">
+          <div class="ans-content" id="maincontent-${cardId}"><span style="color:var(--muted);font-size:13px">Click <strong>Ask AI ✦</strong> to get the answer.</span></div>
+        </div>
+      </div>`;
+    searchPanel.appendChild(div);
+  });
+});
+</script>
+</body>
+</html>
