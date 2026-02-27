@@ -95,16 +95,13 @@ header {
 
 /* ════════════════════════════════
    OVERLAY (mobile drawer backdrop)
-   FIX: Removed backdrop-filter: blur(2px) — it was bleeding through and
-   blurring the sidebar drawer even though sidebar z-index > overlay z-index.
-   backdrop-filter creates a GPU compositing layer that affects siblings
-   rendered in the same stacking context regardless of z-index ordering.
 ════════════════════════════════ */
 .overlay {
   display: none;
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.45);
-  z-index: 255; /* FIX: raised to 255, sidebar is 260 — clean separation */
+  z-index: 258;
+  /* NO backdrop-filter — it bleeds through regardless of z-index */
 }
 .overlay.open { display: block; }
 
@@ -118,21 +115,25 @@ header {
   position: relative; z-index: 1;
 }
 
-/* ════════════════════════════════
-   SIDEBAR
-   FIX: Added isolation: isolate so the sidebar establishes its own
-   stacking context, ensuring it always renders on top of the overlay.
-════════════════════════════════ */
+/* On desktop, aside is sticky inside a fixed-position outside the grid,
+   so we use a placeholder column to reserve the space */
+.sidebar-placeholder {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+}
+
+/* Sidebar sits outside .layout — absolutely positioned on desktop */
 aside {
   border-right: 2px solid var(--border);
   background: var(--surface);
-  position: sticky; top: var(--header-h);
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  width: var(--sidebar-w);
   height: calc(100vh - var(--header-h));
   overflow-y: auto;
   display: flex; flex-direction: column;
-  transition: transform 0.3s ease;
   z-index: 260;
-  isolation: isolate; /* FIX: creates proper stacking context */
 }
 aside::-webkit-scrollbar { width: 3px; }
 aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -361,7 +362,6 @@ mark { background:#ffd54f; border-radius:2px; padding:0 2px; }
    RESPONSIVE BREAKPOINTS
 ════════════════════════════════ */
 
-/* ── TABLET (768px – 1024px) ── */
 @media (max-width: 1024px) {
   :root { --sidebar-w: 230px; }
   main { padding: 20px 18px 48px; }
@@ -383,6 +383,7 @@ mark { background:#ffd54f; border-radius:2px; padding:0 2px; }
 
   /* full-width single column */
   .layout { grid-template-columns: 1fr; }
+  .sidebar-placeholder { display: none; }
 
   /* sidebar becomes a slide-in drawer */
   aside {
@@ -393,11 +394,9 @@ mark { background:#ffd54f; border-radius:2px; padding:0 2px; }
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     box-shadow: var(--shadow-lg);
-    z-index: 260;
+    z-index: 259;
     border-right: 2px solid var(--border);
-    /* FIX: isolation ensures this element paints above the overlay */
-    isolation: isolate;
-    will-change: transform; /* FIX: promotes to own compositing layer */
+    background: var(--surface);
   }
   aside.open { transform: translateX(0); }
 
@@ -481,21 +480,24 @@ mark { background:#ffd54f; border-radius:2px; padding:0 2px; }
   </div>
 </header>
 
-<!-- Mobile backdrop overlay -->
+<!-- Mobile backdrop overlay — top level so z-index is unambiguous -->
 <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
+<!-- Sidebar pulled OUT of .layout so it stacks cleanly above overlay on mobile -->
+<aside id="sidebar">
+  <div class="drawer-close" id="drawer-close-row" style="display:none">
+    <div class="drawer-close-logo"><span style="color:var(--accent)">●</span> Sections</div>
+    <button class="drawer-close-btn" onclick="closeSidebar()">✕</button>
+  </div>
+  <div class="sidebar-search">
+    <input class="search-input" id="search-box" placeholder="🔍 Search 510+ questions..." />
+  </div>
+  <div class="sidebar-sections" id="sidebar-nav"></div>
+</aside>
+
 <div class="layout">
-  <aside id="sidebar">
-    <!-- Mobile drawer header with close button -->
-    <div class="drawer-close" id="drawer-close-row" style="display:none">
-      <div class="drawer-close-logo"><span style="color:var(--accent)">●</span> Sections</div>
-      <button class="drawer-close-btn" onclick="closeSidebar()">✕</button>
-    </div>
-    <div class="sidebar-search">
-      <input class="search-input" id="search-box" placeholder="🔍 Search 510+ questions..." />
-    </div>
-    <div class="sidebar-sections" id="sidebar-nav"></div>
-  </aside>
+  <!-- sidebar placeholder so grid layout still works on desktop -->
+  <div class="sidebar-placeholder"></div>
   <main id="main-area">
     <div id="search-results-panel" class="sec-panel"></div>
   </main>
