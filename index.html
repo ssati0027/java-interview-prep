@@ -95,13 +95,16 @@ header {
 
 /* ════════════════════════════════
    OVERLAY (mobile drawer backdrop)
+   FIX: Removed backdrop-filter: blur(2px) — it was bleeding through and
+   blurring the sidebar drawer even though sidebar z-index > overlay z-index.
+   backdrop-filter creates a GPU compositing layer that affects siblings
+   rendered in the same stacking context regardless of z-index ordering.
 ════════════════════════════════ */
 .overlay {
   display: none;
   position: fixed; inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 250;
-  backdrop-filter: blur(2px);
+  background: rgba(0,0,0,0.45);
+  z-index: 255; /* FIX: raised to 255, sidebar is 260 — clean separation */
 }
 .overlay.open { display: block; }
 
@@ -117,6 +120,8 @@ header {
 
 /* ════════════════════════════════
    SIDEBAR
+   FIX: Added isolation: isolate so the sidebar establishes its own
+   stacking context, ensuring it always renders on top of the overlay.
 ════════════════════════════════ */
 aside {
   border-right: 2px solid var(--border);
@@ -127,6 +132,7 @@ aside {
   display: flex; flex-direction: column;
   transition: transform 0.3s ease;
   z-index: 260;
+  isolation: isolate; /* FIX: creates proper stacking context */
 }
 aside::-webkit-scrollbar { width: 3px; }
 aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -183,7 +189,7 @@ aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; 
 ════════════════════════════════ */
 main {
   padding: 24px 24px 48px;
-  min-width: 0; /* prevent overflow in grid */
+  min-width: 0;
 }
 
 .sec-panel { display: none; }
@@ -389,6 +395,9 @@ mark { background:#ffd54f; border-radius:2px; padding:0 2px; }
     box-shadow: var(--shadow-lg);
     z-index: 260;
     border-right: 2px solid var(--border);
+    /* FIX: isolation ensures this element paints above the overlay */
+    isolation: isolate;
+    will-change: transform; /* FIX: promotes to own compositing layer */
   }
   aside.open { transform: translateX(0); }
 
@@ -1158,12 +1167,10 @@ searchBox.addEventListener('input', function(){
   const val = this.value.trim().toLowerCase();
   if(!val) {
     searchPanel.classList.remove('active');
-    // re-show last active section
     const activeBtn = document.querySelector('.section-btn.active');
     if(activeBtn) { document.getElementById('panel-'+activeBtn.dataset.secid)?.classList.add('active'); }
     return;
   }
-  // hide all section panels
   document.querySelectorAll('.sec-panel:not(#search-results-panel)').forEach(p=>p.classList.remove('active'));
   searchPanel.classList.add('active');
 
